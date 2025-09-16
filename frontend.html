@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heavy Metal Pollution Index Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #6c757d;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .input-group h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group h3::before {
+            content: "🧪";
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .location-group h3::before {
+            content: "📍";
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+
+        input[type="number"], select {
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .unit {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .results-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .hmpi-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .hmpi-value {
+            font-size: 3em;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+
+        .quality-category {
+            font-size: 1.2em;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .category-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .category-moderate {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .category-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .chart-container {
+            height: 300px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            margin: 20px 0;
+        }
+
+        .map-container {
+            height: 400px;
+            background: #e9ecef;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            margin: 20px 0;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .input-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Heavy Metal Pollution Index Calculator</h1>
+            <p>Advanced Groundwater Quality Assessment Tool</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('calculator')">HMPI Calculator</button>
+            <button class="nav-tab" onclick="showTab('history')">Data History</button>
+            <button class="nav-tab" onclick="showTab('visualization')">Visualization</button>
+            <button class="nav-tab" onclick="showTab('reports')">Reports</button>
+        </div>
+
+        <div id="calculator" class="tab-content active">
+            <div class="input-section">
+                <div class="input-group">
+                    <h3>Heavy Metal Concentrations</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="lead">Lead (Pb)</label>
+                            <input type="number" id="lead" step="0.001" placeholder="0.000">
+                            <div class="unit">mg/L</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="cadmium">Cadmium (Cd)</label>
+                            <input type="number" id="cadmium" step="0.001" placeholder="0.000">
+                            <div class="unit">mg/L</div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="arsenic">Arsenic (As)</label>
+                            <input type="number" id="arsenic" step="0.001" placeholder="0.000">
+                            <div class="unit">mg/L</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="mercury">Mercury (Hg)</label>
+                            <input type="number" id="mercury" step="0.001" placeholder="0.000">
+                            <div class="unit">mg/L</div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="chromium">Chromium (Cr)</label>
+                            <input type="number" id="chromium" step="0.001" placeholder="0.000">
+                            <div class="unit">mg/L</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="nickel">Nickel (Ni)</label>
+                            <input type="number" id="nickel" step="0.001" placeholder="0.000">
+                            <div class="unit">mg/L</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group location-group">
+                    <h3>Sample Location & Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="latitude">Latitude</label>
+                            <input type="number" id="latitude" step="0.0001" placeholder="25.1234">
+                            <div class="unit">degrees</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="longitude">Longitude</label>
+                            <input type="number" id="longitude" step="0.0001" placeholder="82.5678">
+                            <div class="unit">degrees</div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sampleId">Sample ID</label>
+                            <input type="text" id="sampleId" placeholder="SAMPLE-001">
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location Name</label>
+                            <input type="text" id="location" placeholder="District/Area">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="depth">Well Depth</label>
+                            <input type="number" id="depth" placeholder="50">
+                            <div class="unit">meters</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="date">Sample Date</label>
+                            <input type="date" id="date">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="calculateHMPI()">
+                    <span>🧮</span> Calculate HMPI
+                </button>
+                <button class="btn btn-secondary" onclick="clearForm()">
+                    <span>🗑️</span> Clear Form
+                </button>
+                <button class="btn btn-success" onclick="saveData()">
+                    <span>💾</span> Save Data
+                </button>
+                <button class="btn btn-warning" onclick="loadSample()">
+                    <span>📥</span> Load Sample
+                </button>
+            </div>
+
+            <div class="results-section" style="display: none;" id="results">
+                <div class="result-card">
+                    <div class="hmpi-display">
+                        <div class="hmpi-value" id="hmpiValue">45.2</div>
+                        <div class="quality-category category-moderate" id="qualityCategory">
+                            Moderate Pollution
+                        </div>
+                    </div>
+                    
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Heavy Metal</th>
+                                <th>Concentration (mg/L)</th>
+                                <th>WHO Standard</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTable">
+                            <tr>
+                                <td>Lead (Pb)</td>
+                                <td>0.015</td>
+                                <td>0.01</td>
+                                <td style="color: #e74c3c;">⚠️ Above Limit</td>
+                            </tr>
+                            <tr>
+                                <td>Cadmium (Cd)</td>
+                                <td>0.005</td>
+                                <td>0.003</td>
+                                <td style="color: #e74c3c;">⚠️ Above Limit</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="history" class="tab-content">
+            <h2>Data History & Records</h2>
+            <div class="action-buttons">
+                <button class="btn btn-primary">📊 View All Records</button>
+                <button class="btn btn-secondary">📤 Export Data</button>
+                <button class="btn btn-warning">🔍 Search Records</button>
+            </div>
+            <div class="chart-container">
+                Data History Table & Search Functionality
+            </div>
+        </div>
+
+        <div id="visualization" class="tab-content">
+            <h2>Spatial Visualization & Maps</h2>
+            <div class="action-buttons">
+                <button class="btn btn-primary">🗺️ View Map</button>
+                <button class="btn btn-secondary">📈 Generate Charts</button>
+                <button class="btn btn-success">🎯 Hotspot Analysis</button>
+            </div>
+            <div class="map-container">
+                Interactive Map Showing HMPI Values by Location
+            </div>
+            <div class="chart-container">
+                Charts & Graphs for Trend Analysis
+            </div>
+        </div>
+
+        <div id="reports" class="tab-content">
+            <h2>Reports & Analytics</h2>
+            <div class="action-buttons">
+                <button class="btn btn-primary">📋 Generate Report</button>
+                <button class="btn btn-secondary">📊 Statistical Summary</button>
+                <button class="btn btn-success">📈 Trend Analysis</button>
+                <button class="btn btn-warning">⚠️ Alert Dashboard</button>
+            </div>
+            <div class="chart-container">
+                Comprehensive Reports & Statistical Analysis
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 Heavy Metal Pollution Index Calculator | Environmental Monitoring Tool</p>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function calculateHMPI() {
+            // Sample calculation logic
+            const lead = parseFloat(document.getElementById('lead').value) || 0;
+            const cadmium = parseFloat(document.getElementById('cadmium').value) || 0;
+            const arsenic = parseFloat(document.getElementById('arsenic').value) || 0;
+            const mercury = parseFloat(document.getElementById('mercury').value) || 0;
+            
+            // Simple HMPI calculation (this would be replaced with actual formula)
+            const hmpi = (lead * 10) + (cadmium * 15) + (arsenic * 12) + (mercury * 20);
+            
+            document.getElementById('hmpiValue').textContent = hmpi.toFixed(1);
+            document.getElementById('results').style.display = 'block';
+            
+            // Update category based on HMPI value
+            let category = 'Low Pollution';
+            let categoryClass = 'category-low';
+            
+            if (hmpi > 50) {
+                category = 'High Pollution';
+                categoryClass = 'category-high';
+            } else if (hmpi > 25) {
+                category = 'Moderate Pollution';
+                categoryClass = 'category-moderate';
+            }
+            
+            const categoryElement = document.getElementById('qualityCategory');
+            categoryElement.textContent = category;
+            categoryElement.className = 'quality-category ' + categoryClass;
+        }
+
+        function clearForm() {
+            document.querySelectorAll('input[type="number"], input[type="text"], input[type="date"]').forEach(input => {
+                input.value = '';
+            });
+            document.getElementById('results').style.display = 'none';
+        }
+
+        function saveData() {
+            alert('Data saved to database!');
+        }
+
+        function loadSample() {
+            // Load sample data
+            document.getElementById('lead').value = '0.015';
+            document.getElementById('cadmium').value = '0.005';
+            document.getElementById('arsenic').value = '0.01';
+            document.getElementById('mercury').value = '0.002';
+            document.getElementById('latitude').value = '25.1234';
+            document.getElementById('longitude').value = '82.5678';
+            document.getElementById('sampleId').value = 'SAMPLE-001';
+            document.getElementById('location').value = 'Test Location';
+        }
+    </script>
+</body>
+</html>
